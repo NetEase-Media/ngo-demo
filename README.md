@@ -27,4 +27,4 @@ go run ./cmd/main.go -c ./configs/app-local.yaml
 
 #### 建议环境
 自己可以在本地搭建`mysql`, `redis`, `kafka`。
-或者自己修改配置文件，连接其他主机的环境。
+必须自己修改配置文件，连接其他主机的环境，否则项目无法启动。
