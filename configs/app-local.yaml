@@ -1,0 +1,104 @@
+service:
+  appName: ngo-demo
+  clusterName: ngo-demo-docker-11 # 哨兵上报需要该字段，不然会上报失败
+httpServer:
+  port: 8080 # 服务的端口号
+  mode: debug # release 模式[gin 框架]
+  middlewares:
+    accesslog:
+      enabled: false
+      path: ./logs
+      pattern: '%{X-Real-Ip}i %h %l %u %t "%r" %s %b "%{Referer}i" "%{User-Agent}i" %D %{data}r'
+      maxAge: 7
+      maxBackups: 7
+      maxSize: 1024
+      compress: false
+    urlMetrics:
+      originalPath: true
+log:
+  path: ./logs # 日志路径
+  level: info
+  format: txt
+  errorPath: ./logs # 建议和info日志相同，方便做日志上报
+  noFile: true
+  writableStack: true #打印堆栈
+  maxAge: 7
+  maxBackups: 7
+  maxSize: 1024
+  compress: false
+db:
+  - name: db01
+    type: mysql
+    url:
+    maxIdleCons: 0
+    maxOpenCons: 1
+    connMaxLifetime: 1s
+    connMaxIdleTime: 1s
+httpClient:
+  noDefaultUserAgentHeader: true
+  maxConnsPerHost: 41
+  maxIdleConnDuration: 50s
+  maxConnDuration: 10s
+  maxIdemponentCallAttempts: 55
+  readBufferSize: 88
+  writeBufferSize: 128
+  readTimeout: 4s
+  writeTimeout: 5s
+  maxResponseBodySize: 23
+  maxConnWaitTimeout: 10
+redis:
+  - name: name
+    connType: client
+    addr: 192.168.2.11:6379
+    #    username:
+    password: password
+    db: 0
+  - name: name
+    connType: sharded_sentinel
+    masterNames:
+      - recncr6510
+      - recncr6511
+      - recncr6512
+    addr:
+      - 192.168.10.10:26379
+      - 192.168.10.10:26380
+      - 192.168.10.10:26381
+    #    username:
+    autoGenShardName: true
+    password: password
+    db: 0
+dlock:
+  pools:
+    - redis01
+kafka: # 本地自行安装kafka，或者通过测试环境
+  - name: k1
+    addr:
+      - 192.168.11.11:9092
+    version: 0.11.0.2
+    dialTimeout: 5s
+    readTimeout: 5s
+    writeTimeout: 5s
+    metadata:
+      retries: 2
+      timeout: 10s
+    consumer:
+      group: g0
+      enableAutoCommit: false
+      autoCommitInterval: 1s
+      initialOffset: -1 # OffsetNewest=-1  OffsetNewest=-2
+      sessionTimeout: 10s
+      minFetchBytes: 1
+      maxFetchBytes: 0 # 无限制
+      maxFetchWait: 250ms
+      retries: 1
+    producer:
+      maxMessageBytes: 1000000
+      acks: 1 # NoResponse = 0   WaitForLocal  = 1  WaitForAll = -1
+      timeout: 10s
+      retries: 3
+      maxFlushBytes: 0
+      maxFlushMessages: 0
+      flushFrequency: 0
+pprof:
+  switch: true
+  port: 9999
